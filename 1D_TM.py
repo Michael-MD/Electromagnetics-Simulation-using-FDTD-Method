@@ -2,7 +2,7 @@ from constants import *
 import numpy as np
 from warnings import warn
 import matplotlib.pyplot as plt
-
+from matplotlib.animation import FuncAnimation
 
 from PIL import Image
 import cv2
@@ -112,15 +112,21 @@ x=one_dimensional_simulation(0.18e-9, 5.4e-2, np.zeros((401,1)), np.zeros((401,1
 x.E_source=lambda n: np.exp(-((n-8)**2)/16)
 
 
-for i in range(0,50,10):
+
+# plot
+
+fig, ax=plt.subplots()
+ax.set_xlim([0,401])
+ax.set_ylim([-1.5,1.5])
+line,=ax.plot(0,0)
+
+def animation_frame(i):
 	x.step(i*1e-9)
+	line.set_xdata(np.linspace(0,401,len(x.E)))
+	line.set_ydata(x.E)
 
-	plt.plot(x.E)
-	# plt.plot(x.H_tilde)
+	return line,
 
-	plt.show()
-
-
-
-
+animation=FuncAnimation(fig, func=animation_frame, frames=range(0,50,2), interval=50)
+plt.show()
 
