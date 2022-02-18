@@ -22,6 +22,11 @@ class one_dimensional_simulation:
 		self.mE=self.delta_t/(eps_0*self.delta_x)
 		self.mH=self.delta_t/(mu_0*self.delta_x)
 
+		self.mE=lambda k: self.delta_t/(eps_0*self.delta_x) if k<200 else self.delta_t/(eps_0*4*self.delta_x)
+		self.mH=lambda k: self.delta_t/(mu_0*self.delta_x) if k<200 else self.delta_t/(mu_0*self.delta_x)
+
+
+
 		self.eta=np.sqrt(mu_0/eps_0)
 
 		self.E=E_0
@@ -61,7 +66,7 @@ class one_dimensional_simulation:
 			self.H[0]=self.H_edge_left[1]
 			self.H[self.N_x-1]=self.H_edge_right[2]
 			for k in range(0,self.N_x-1):
-				self.H[k]=self.H[k]+self.mH*( self.E[k+1] - self.E[k] )			
+				self.H[k]=self.H[k]+self.mH(k)*( self.E[k+1] - self.E[k] )			
 
 
 			self.H_tilde=self.H*self.eta
@@ -70,7 +75,7 @@ class one_dimensional_simulation:
 			self.E[0]=self.E_edge_left[1]
 			self.E[self.N_x-1]=self.E_edge_right[2]
 			for k in range(1,self.N_x):
-				self.E[k]=self.E[k]+self.mE*( self.H[k] - self.H[k-1] )
+				self.E[k]=self.E[k]+self.mE(k)*( self.H[k] - self.H[k-1] )
 			
 
 			# ---------------------------------------------
@@ -94,7 +99,7 @@ class one_dimensional_simulation:
 			self.E_edge_right[0]=self.E[-2]
 
 
-			self.E[self.pos_center]=self.E_source(n)
+			self.E[25]=self.E_source(n)
 
 
 		self.sim_time=T 	# update to time of simulation
@@ -107,7 +112,7 @@ x=one_dimensional_simulation(0.18e-9, 5.4e-2, np.zeros((401,1)), np.zeros((401,1
 x.E_source=lambda n: np.exp(-((n-8)**2)/16)
 
 
-for i in range(0,50,20):
+for i in range(0,50,10):
 	x.step(i*1e-9)
 
 	plt.plot(x.E)
